@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_app/models/place_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:ui' as ui;
 
 class CustomGoogleMap extends StatefulWidget {
   const CustomGoogleMap({super.key});
@@ -25,6 +27,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
+      zoomControlsEnabled: false,
       markers: markers,
       style: nightMapStyle,
       onMapCreated: (controller) {
@@ -41,10 +44,27 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     setState(() {});
   }
 
-  void initMarkers() {
+  // Future<Uint8List> getImageFromRawData(String image, double width) async {
+  //   var imageData = await rootBundle.load(image);
+  //   var imageCodec = await ui.instantiateImageCodec(
+  //       imageData.buffer.asUint8List(),
+  //       targetWidth: width.round());
+  //   var imageFrameInfo = await imageCodec.getNextFrame();
+  //   var imageByteData =
+  //       await imageFrameInfo.image.toByteData(format: ui.ImageByteFormat.png);
+  //   return imageByteData!.buffer.asUint8List();
+  // }
+
+  void initMarkers() async {
+    // var customIconMarker = BitmapDescriptor.bytes(
+    //     await getImageFromRawData('assets/images/placeholder.png', 100));
+    var customIconMarker = await BitmapDescriptor.asset(
+        ImageConfiguration(size: Size(40, 40)),
+        'assets/images/placeholder.png');
     var myMarker = places
         .map(
           (placesModel) => Marker(
+            icon: customIconMarker,
             infoWindow: InfoWindow(
               title: placesModel.name,
             ),
@@ -56,6 +76,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
         )
         .toSet();
     markers.addAll(myMarker);
+    setState(() {});
   }
 }
 
